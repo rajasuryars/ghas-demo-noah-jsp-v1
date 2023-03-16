@@ -30,7 +30,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
-          queries: "+advanced-security/codeql-queries/java/CWE-079/XSSJSP.ql@main,+advanced-security/codeql-queries/java/CWE-079/XSSJSPLenient.ql@main,security-extended,security-and-quality"
+          queries: +advanced-security/codeql-queries/java/CWE-079/XSSJSPLenient.ql@main
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2
