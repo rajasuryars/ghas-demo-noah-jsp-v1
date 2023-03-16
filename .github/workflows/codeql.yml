@@ -24,20 +24,22 @@ jobs:
       matrix:
         language: [ 'java', 'javascript' ]
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
-      with:
-        languages: ${{ matrix.language }}
-         queries: +advanced-security/codeql-queries/java/CWE-079/XSSJSP.ql@main
-         queries: +advanced-security/codeql-queries/java/CWE-079/XSSJSPLenient.ql@main
-         queries: security-extended, security-and-quality  
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v2
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
-      with:
-        # Set category based on matrix language value
-        category: "/language:${{ matrix.language }}"
-        add-snippets: true
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: ${{ matrix.language }}
+          queries: >-
+            +advanced-security/codeql-queries/java/CWE-079/XSSJSP.ql@main,
+            +advanced-security/codeql-queries/java/CWE-079/XSSJSPLenient.ql@main,
+            security-extended,
+            security-and-quality
+      - name: Autobuild
+        uses: github/codeql-action/autobuild@v2
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+        with:
+          # Set category based on matrix language value
+          category: "/language:${{ matrix.language }}"
+          add-snippets: true
