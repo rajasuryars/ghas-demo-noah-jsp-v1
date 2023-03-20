@@ -31,7 +31,6 @@ jobs:
         with:
           languages: ${{ matrix.language }}
           queries: +advanced-security/codeql-queries/java/CWE-079/XSSJSPLenient.ql@main, security-extended
-          
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2
       - name: Perform CodeQL Analysis
@@ -40,34 +39,25 @@ jobs:
           # Set category based on matrix language value
           category: "/language:${{ matrix.language }}"
           add-snippets: true
-
-  credentials:
-    name: Credentials
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    strategy:
-      fail-fast: false
-      matrix:
-        language: ['java', 'javascript']
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Initialize CodeQL for Credentials
-        uses: github/codeql-action/init@v2
-        with:
-          languages: ${{ matrix.language }}
-          queries: +security/codeql-queries/javascript/CredentialManagement.ql@main
-
-      - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
-      - name: Perform CodeQL Analysis for Credential Management
-        uses: github/codeql-action/analyze@v2
-        with:
-          # Set category based on matrix language value
-          category: "/language:${{ matrix.language }}"
-          add-snippets: true
-          # Set custom query path for the specific analysis
-          queries: security/codeql-queries/javascript/CredentialManagement.ql
+          # Add vulnerability queries
+          run: |
+            ${forEach queryPack in [
+              {
+                "name": "Credentials Management",
+                "pack": "advanced-security/codeql-queries/java/CWE-522/CredentialsManagement.ql@main"
+              },
+              {
+                "name": "API Abuse",
+                "pack": "security-extended/api-abuse.ql@main"
+              },
+              {
+                "name": "XSS",
+                "pack": "advanced-security/codeql-queries/java/CWE-079/XSSJSPOrHTMLAttribute.ql@main"
+              }
+            ]}{
+              echo "Adding ${queryPack.name} query pack"
+              echo "queries += ${queryPack.pack}" >> ${{ github.workspace }}/config.lgtm
+            }
+            # Add the updated queries to the "Initialize CodeQL" action
+            echo "queries += $(cat ${{ github.workspace }}/config.lgtm)" >> ${{ github.workspace }}/config.lgtm
+            cat ${{ github.workspace }}/config.lgtm
