@@ -30,7 +30,7 @@ jobs:
         uses: github/codeql-action/init@v2
         with:
           languages: ${{ matrix.language }}
-          queries: +security@main
+          queries: java-code-scanning.qls, java-security-extended.qls, java-security-and-quality.qls
 
       - name: Autobuild
         uses: github/codeql-action/autobuild@v2
